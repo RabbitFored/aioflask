@@ -6,7 +6,7 @@ from flask.app import *
 from flask.app import Flask as OriginalFlask
 from flask import cli
 from flask.globals import _app_ctx_stack, _request_ctx_stack
-from flask.helpers import get_debug_flag, get_env, get_load_dotenv
+from flask.helpers import get_debug_flag, get_load_dotenv
 from greenletio import await_
 import uvicorn
 from .asgi import WsgiToAsgiInstance
@@ -14,6 +14,23 @@ from .cli import show_server_banner, AppGroup
 from .ctx import AppContext, RequestContext
 from .testing import FlaskClient, FlaskCliRunner
 
+def get_env() -> str:
+    """Get the environment the app is running in, indicated by the
+    :envvar:`FLASK_ENV` environment variable. The default is
+    ``'production'``.
+
+    .. deprecated:: 2.2
+        Will be removed in Flask 2.3.
+    """
+    import warnings
+
+    warnings.warn(
+        "'FLASK_ENV' and 'get_env' are deprecated and will be removed"
+        " in Flask 2.3. Use 'FLASK_DEBUG' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return os.environ.get("FLASK_ENV") or "production"
 
 class Flask(OriginalFlask):
     def __init__(self, *args, **kwargs):
